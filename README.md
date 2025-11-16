@@ -1,4 +1,4 @@
-# FashionHub - E-commerce Website
+# StyleAura - E-commerce Website
 
 A modern, responsive e-commerce website built with Next.js 15, TypeScript, and Tailwind CSS. Features a beautiful UI showcasing men's and women's clothing collections.
 
