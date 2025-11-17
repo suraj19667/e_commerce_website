@@ -42,7 +42,7 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-3 text-gray-400 hover:text-white transition">
                 <FaMapMarkerAlt className="w-4 h-4 mt-1" />
-                <span className="text-sm">123 Fashion Street, Mumbai,<br />Maharashtra 400001, India</span>
+                <span className="text-sm">Katara Hills, Bhopal <br />Madhya Pradesh, India</span>
               </div>
             </div>
           </div>
