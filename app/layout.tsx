@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FashionHub - Modern E-commerce Store",
+  title: "StyleAura",
   description: "Shop the latest fashion trends for men and women",
 };
 
