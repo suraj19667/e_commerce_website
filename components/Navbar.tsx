@@ -43,7 +43,6 @@ export default function Navbar() {
             </Link>
           </div>
           
-          {/* Desktop Menu - Categories */}
           <div className="hidden lg:flex items-center space-x-8">
             {categories.map((category) => (
               <Link
