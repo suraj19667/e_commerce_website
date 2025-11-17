@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { FaUser, FaShoppingBag, FaHeart, FaMapMarkerAlt, FaCreditCard, FaCog, FaSignOutAlt, FaEdit } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaUser, FaShoppingBag, FaHeart, FaMapMarkerAlt, FaCreditCard, FaCog, FaSignOutAlt, FaEdit, FaTimes, FaGoogle, FaApple, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Link from 'next/link';
 import { useCart } from '@/components/CartContext';
 
@@ -36,6 +36,65 @@ export default function ProfilePage() {
     { id: 2, type: 'Work', address: '456 Park Ave, Delhi, Delhi 110001', default: false },
   ];
 
+  // Enhanced state for better UX
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [signupForm, setSignupForm] = useState({ name: '', email: '', password: '' });
+
+  useEffect(() => {
+    // prevent background scroll when modal open
+    document.body.style.overflow = showAuthModal ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showAuthModal]);
+
+  const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginForm((s) => ({ ...s, [e.target.name]: e.target.value }));
+  };
+
+  const handleSignupChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSignupForm((s) => ({ ...s, [e.target.name]: e.target.value }));
+  };
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      if (!loginForm.email || !loginForm.password) {
+        alert('Please enter email and password.');
+        setIsLoading(false);
+        return;
+      }
+      alert(`Welcome back, ${loginForm.email}!`);
+      setShowAuthModal(false);
+      setIsLoading(false);
+    }, 1500);
+  };
+
+  const handleSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      if (!signupForm.name || !signupForm.email || !signupForm.password) {
+        alert('Please fill all fields.');
+        setIsLoading(false);
+        return;
+      }
+      alert(`Welcome to the family, ${signupForm.name}!`);
+      setShowAuthModal(false);
+      setIsLoading(false);
+    }, 1500);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,7 +107,14 @@ export default function ProfilePage() {
                 alt={user.name}
                 className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
               />
-              <button className="absolute bottom-0 right-0 bg-white text-gray-900 p-2 rounded-full shadow-lg hover:bg-gray-100 transition">
+              <button
+                onClick={() => {
+                  setAuthMode('login');
+                  setShowAuthModal(true);
+                }}
+                className="absolute bottom-0 right-0 bg-white text-gray-900 p-2 rounded-full shadow-lg hover:bg-gray-100 transition"
+                aria-label="Open login / signup"
+              >
                 <FaEdit className="w-4 h-4" />
               </button>
             </div>
@@ -57,7 +123,13 @@ export default function ProfilePage() {
               <p className="text-gray-300 mb-1">{user.email}</p>
               <p className="text-gray-400 text-sm">Member since {user.memberSince}</p>
             </div>
-            <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg transition backdrop-blur-sm border border-white/20">
+            <button
+              onClick={() => {
+                setAuthMode('login');
+                setShowAuthModal(true);
+              }}
+              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-lg transition backdrop-blur-sm border border-white/20"
+            >
               <FaEdit className="w-4 h-4" />
               Edit Profile
             </button>
@@ -253,6 +325,281 @@ export default function ProfilePage() {
             )}
           </div>
         </div>
+
+        {/* ENHANCED AUTH MODAL */}
+        {showAuthModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity"
+              onClick={() => setShowAuthModal(false)}
+              aria-hidden="true"
+            />
+            
+            {/* Modal */}
+            <div className="relative z-10 w-full max-w-md mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all scale-100 opacity-100">
+              {/* Header */}
+              <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white px-8 py-6">
+                <button
+                  onClick={() => setShowAuthModal(false)}
+                  className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors"
+                  aria-label="Close"
+                >
+                  <FaTimes className="w-4 h-4" />
+                </button>
+                
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold mb-2">
+                    {authMode === 'login' ? 'Welcome Back!' : 'Join Us Today!'}
+                  </h2>
+                  <p className="text-gray-300 text-sm">
+                    {authMode === 'login' 
+                      ? 'Sign in to access your account and continue shopping' 
+                      : 'Create an account to unlock exclusive features and offers'
+                    }
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-8">
+                {/* Tab Switcher */}
+                <div className="flex gap-1 w-full bg-gray-100 rounded-2xl p-1 mb-8">
+                  <button
+                    onClick={() => {
+                      setAuthMode('login');
+                      setShowPassword(false);
+                    }}
+                    className={`flex-1 text-sm py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
+                      authMode === 'login' 
+                        ? 'bg-white shadow-lg text-gray-900 transform scale-[0.98]' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => {
+                      setAuthMode('signup');
+                      setShowPassword(false);
+                    }}
+                    className={`flex-1 text-sm py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
+                      authMode === 'signup' 
+                        ? 'bg-white shadow-lg text-gray-900 transform scale-[0.98]' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Sign Up
+                  </button>
+                </div>
+
+                {/* Forms */}
+                {authMode === 'login' ? (
+                  <form onSubmit={handleLoginSubmit} className="space-y-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input
+                          name="email"
+                          value={loginForm.email}
+                          onChange={handleLoginChange}
+                          type="email"
+                          className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                          placeholder="Enter your email"
+                          required
+                          disabled={isLoading}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <div className="relative">
+                          <input
+                            name="password"
+                            value={loginForm.password}
+                            onChange={handleLoginChange}
+                            type={showPassword ? "text" : "password"}
+                            className="w-full px-4 py-4 pr-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                            placeholder="Enter your password"
+                            required
+                            disabled={isLoading}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-sm">
+                      <label className="flex items-center gap-2 text-gray-600 cursor-pointer">
+                        <input type="checkbox" className="w-4 h-4 text-gray-900 rounded border-gray-300 focus:ring-gray-900" />
+                        Remember me
+                      </label>
+                      <button 
+                        type="button" 
+                        className="text-gray-900 hover:text-gray-700 font-medium hover:underline transition-colors"
+                        onClick={() => alert('Forgot password flow')}
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 rounded-xl font-semibold hover:from-gray-800 hover:to-gray-700 transition-all duration-200 transform hover:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                          Signing in...
+                        </>
+                      ) : (
+                        'Sign In'
+                      )}
+                    </button>
+
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-4 bg-white text-gray-500 font-medium">Or continue with</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <button 
+                        type="button" 
+                        className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 transform hover:scale-[0.98]"
+                      >
+                        <FaGoogle className="w-4 h-4 text-red-500" />
+                        Google
+                      </button>
+                      <button 
+                        type="button" 
+                        className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 transform hover:scale-[0.98]"
+                      >
+                        <FaApple className="w-4 h-4" />
+                        Apple
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={handleSignupSubmit} className="space-y-6">
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input
+                          name="name"
+                          value={signupForm.name}
+                          onChange={handleSignupChange}
+                          type="text"
+                          className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                          placeholder="Enter your full name"
+                          required
+                          disabled={isLoading}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input
+                          name="email"
+                          value={signupForm.email}
+                          onChange={handleSignupChange}
+                          type="email"
+                          className="w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                          placeholder="Enter your email"
+                          required
+                          disabled={isLoading}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <div className="relative">
+                          <input
+                            name="password"
+                            value={signupForm.password}
+                            onChange={handleSignupChange}
+                            type={showPassword ? "text" : "password"}
+                            className="w-full px-4 py-4 pr-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white"
+                            placeholder="Create a strong password"
+                            required
+                            disabled={isLoading}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          </button>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">Must be at least 8 characters long</p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white py-4 rounded-xl font-semibold hover:from-gray-800 hover:to-gray-700 transition-all duration-200 transform hover:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                          Creating account...
+                        </>
+                      ) : (
+                        'Create Account'
+                      )}
+                    </button>
+
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-4 bg-white text-gray-500 font-medium">Or sign up with</span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <button 
+                        type="button" 
+                        className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 transform hover:scale-[0.98]"
+                      >
+                        <FaGoogle className="w-4 h-4 text-red-500" />
+                        Google
+                      </button>
+                      <button 
+                        type="button" 
+                        className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 transform hover:scale-[0.98]"
+                      >
+                        <FaApple className="w-4 h-4" />
+                        Apple
+                      </button>
+                    </div>
+
+                    <p className="text-center text-xs text-gray-500 leading-relaxed">
+                      By creating an account, you agree to our{' '}
+                      <button type="button" className="text-gray-900 hover:underline font-medium">Terms of Service</button>
+                      {' '}and{' '}
+                      <button type="button" className="text-gray-900 hover:underline font-medium">Privacy Policy</button>
+                    </p>
+                  </form>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {/* END ENHANCED AUTH MODAL */}
+
       </div>
     </div>
   );

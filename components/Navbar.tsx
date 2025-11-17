@@ -61,7 +61,7 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center space-x-6">
             {/* Profile */}
             <Link
-              href="/profile"
+              href="/auth"
               className="relative flex flex-col items-center text-gray-700 hover:text-blue-600 transition-all duration-300 group px-3 py-2 rounded-lg hover:bg-blue-50"
             >
               <div className="relative">
@@ -166,7 +166,7 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="/profile"
+              href="/auth"
               onClick={() => setIsMenuOpen(false)}
               className="flex items-center px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-all duration-200"
             >
